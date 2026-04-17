@@ -1,4 +1,32 @@
 // ===========================
+// LOADER
+// ===========================
+const loader = document.getElementById('loader');
+let loaderHidden = false;
+
+function hideLoader() {
+  if (!loaderHidden && loader) {
+    loader.classList.add('hidden');
+    loaderHidden = true;
+  }
+}
+
+// Hide loader when page is fully loaded
+window.addEventListener('load', () => {
+  setTimeout(hideLoader, 300);
+});
+
+// Fallback: hide loader after max time
+setTimeout(() => {
+  hideLoader();
+}, 4000);
+
+// Hide loader on first interaction
+['click', 'scroll', 'touchstart', 'keydown'].forEach(event => {
+  document.addEventListener(event, hideLoader, { once: true, passive: true });
+});
+
+// ===========================
 // NAVBAR SCROLL
 // ===========================
 const navbar = document.getElementById('navbar');
