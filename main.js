@@ -129,29 +129,39 @@ const bgSections = {
   '#contacto': 'fondo4.png'
 };
 
+const bgLoadCache = new Set();
+
 const bgObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
-    if (entry.isIntersecting && !entry.target.classList.contains('bg-loaded')) {
-      const imageUrl = bgSections[`#${entry.target.id}`];
+    const sectionId = `#${entry.target.id}`;
+    if (entry.isIntersecting && !bgLoadCache.has(sectionId)) {
+      const imageUrl = bgSections[sectionId];
       
       if (imageUrl) {
-        // Preload the image
-        const img = new Image();
-        img.onload = () => {
-          entry.target.classList.add('bg-loaded');
-        };
-        img.onerror = () => {
-          console.warn(`Failed to load background: ${imageUrl}`);
-          entry.target.classList.add('bg-loaded'); // Still add class to prevent retry
-        };
-        img.src = imageUrl;
+        // Use setTimeout for contacto section to defer loading
+        const delay = sectionId === '#contacto' ? 500 : 0;
+        
+        setTimeout(() => {
+          const img = new Image();
+          img.onload = () => {
+            entry.target.classList.add('bg-loaded');
+            bgLoadCache.add(sectionId);
+          };
+          img.onerror = () => {
+            console.warn(`Failed to load background: ${imageUrl}`);
+            entry.target.classList.add('bg-loaded');
+            bgLoadCache.add(sectionId);
+          };
+          // Add compression query if supported
+          img.src = imageUrl;
+        }, delay);
       }
       
       bgObserver.unobserve(entry.target);
     }
   });
 }, {
-  rootMargin: '100px' // Start loading 100px before entering viewport
+  rootMargin: '200px' // Increase margin for better preloading
 });
 
 // Observe sections that need lazy-loaded backgrounds
@@ -161,3 +171,34 @@ Object.keys(bgSections).forEach(selector => {
     bgObserver.observe(element);
   }
 });
+
+// ===========================
+// LAZY LOAD SONGKICK WIDGET
+// ===========================
+let songkickLoaded = false;
+
+const songkickObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && !songkickLoaded) {
+      songkickLoaded = true;
+      
+      // Load the Songkick widget script
+      setTimeout(() => {
+        const script = document.createElement('script');
+        script.src = 'https://widget-app.songkick.com/injector/10402973';
+        script.async = true;
+        document.getElementById('songkick-container').appendChild(script);
+      }, 300);
+      
+      songkickObserver.unobserve(entry.target);
+    }
+  });
+}, {
+  rootMargin: '300px' // Load widget before entering viewport
+});
+
+// Observe shows section for Songkick widget
+const showsSection = document.getElementById('shows');
+if (showsSection) {
+  songkickObserver.observe(showsSection);
+}

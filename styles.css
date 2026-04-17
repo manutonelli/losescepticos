@@ -378,10 +378,12 @@ section {
   background-position: center;
   transition: background-image 0.5s ease-in-out;
   will-change: background-image;
+  image-rendering: crisp-edges;
 }
 
 #shows.bg-loaded {
   background-image: url('fondo2.png');
+  background-size: cover;
 }
 
 #shows::before {
@@ -414,10 +416,12 @@ section {
   background-position: center;
   transition: background-image 0.5s ease-in-out;
   will-change: background-image;
+  image-rendering: crisp-edges;
 }
 
 #musica.bg-loaded {
   background-image: url('fondo3.png');
+  background-size: cover;
 }
 
 #musica::before {
@@ -650,10 +654,12 @@ section {
   background-position: center;
   transition: background-image 0.5s ease-in-out;
   will-change: background-image;
+  image-rendering: crisp-edges;
 }
 
 #contacto.bg-loaded {
   background-image: url('fondo4.png');
+  background-size: cover;
 }
 
 #contacto::before {
