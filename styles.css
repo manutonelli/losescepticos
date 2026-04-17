@@ -23,7 +23,6 @@
 }
 
 html {
-  scroll-behavior: smooth;
   font-size: 16px;
 }
 
@@ -33,6 +32,8 @@ body {
   font-family: var(--font-body);
   line-height: 1.6;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
@@ -372,10 +373,15 @@ section {
    =========================== */
 #shows {
   position: relative;
-  background-image: url('fondo2.png');
+  background-color: var(--black);
   background-size: cover;
   background-position: center;
-  background-attachment: fixed;
+  transition: background-image 0.5s ease-in-out;
+  will-change: background-image;
+}
+
+#shows.bg-loaded {
+  background-image: url('fondo2.png');
 }
 
 #shows::before {
@@ -403,10 +409,15 @@ section {
    =========================== */
 #musica {
   position: relative;
-  background-image: url('fondo3.png');
+  background-color: var(--black);
   background-size: cover;
   background-position: center;
-  background-attachment: fixed;
+  transition: background-image 0.5s ease-in-out;
+  will-change: background-image;
+}
+
+#musica.bg-loaded {
+  background-image: url('fondo3.png');
 }
 
 #musica::before {
@@ -634,10 +645,15 @@ section {
    =========================== */
 #contacto {
   position: relative;
-  background-image: url('fondo4.png');
+  background-color: var(--black);
   background-size: cover;
   background-position: center;
-  background-attachment: fixed;
+  transition: background-image 0.5s ease-in-out;
+  will-change: background-image;
+}
+
+#contacto.bg-loaded {
+  background-image: url('fondo4.png');
 }
 
 #contacto::before {
@@ -736,13 +752,40 @@ footer p {
 /* Scroll reveal */
 .reveal {
   opacity: 0;
-  transform: translateY(24px);
+  transform: translate3d(0, 24px, 0);
   transition: opacity 0.7s ease, transform 0.7s ease;
 }
 
 .reveal.visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: translate3d(0, 0, 0);
+}
+
+/* Background image loading animation */
+section[id] {
+  position: relative;
+}
+
+section[id]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.05);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  will-change: opacity;
+}
+
+section[id].bg-loaded::after {
+  opacity: 0;
+  animation: bgFade 0.5s ease;
+  will-change: auto;
+}
+
+@keyframes bgFade {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
 /* ===========================

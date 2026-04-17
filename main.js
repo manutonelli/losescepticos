@@ -2,12 +2,23 @@
 // NAVBAR SCROLL
 // ===========================
 const navbar = document.getElementById('navbar');
+let lastScrollY = 0;
+let ticking = false;
 
-window.addEventListener('scroll', () => {
+const updateNavbar = () => {
   if (window.scrollY > 60) {
     navbar.classList.add('scrolled');
   } else {
     navbar.classList.remove('scrolled');
+  }
+  ticking = false;
+};
+
+window.addEventListener('scroll', () => {
+  lastScrollY = window.scrollY;
+  if (!ticking) {
+    requestAnimationFrame(updateNavbar);
+    ticking = true;
   }
 }, { passive: true });
 
@@ -88,18 +99,65 @@ revealTargets.forEach(selector => {
 // ===========================
 const sections = document.querySelectorAll('section[id]');
 const navLinkEls = document.querySelectorAll('.nav-links a');
+const linkMap = new Map();
+
+navLinkEls.forEach(link => {
+  linkMap.set(link.getAttribute('href'), link);
+});
 
 const sectionObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       const id = entry.target.getAttribute('id');
+      const hash = `#${id}`;
       navLinkEls.forEach(link => {
-        link.style.color = link.getAttribute('href') === `#${id}`
-          ? 'var(--white)'
-          : '';
+        const isActive = link.getAttribute('href') === hash;
+        link.style.color = isActive ? 'var(--white)' : '';
       });
     }
   });
 }, { threshold: 0.5 });
 
 sections.forEach(s => sectionObserver.observe(s));
+
+// ===========================
+// LAZY LOAD BACKGROUND IMAGES
+// ===========================
+const bgSections = {
+  '#shows': 'fondo2.png',
+  '#musica': 'fondo3.png',
+  '#contacto': 'fondo4.png'
+};
+
+const bgObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && !entry.target.classList.contains('bg-loaded')) {
+      const imageUrl = bgSections[`#${entry.target.id}`];
+      
+      if (imageUrl) {
+        // Preload the image
+        const img = new Image();
+        img.onload = () => {
+          entry.target.classList.add('bg-loaded');
+        };
+        img.onerror = () => {
+          console.warn(`Failed to load background: ${imageUrl}`);
+          entry.target.classList.add('bg-loaded'); // Still add class to prevent retry
+        };
+        img.src = imageUrl;
+      }
+      
+      bgObserver.unobserve(entry.target);
+    }
+  });
+}, {
+  rootMargin: '100px' // Start loading 100px before entering viewport
+});
+
+// Observe sections that need lazy-loaded backgrounds
+Object.keys(bgSections).forEach(selector => {
+  const element = document.querySelector(selector);
+  if (element) {
+    bgObserver.observe(element);
+  }
+});
