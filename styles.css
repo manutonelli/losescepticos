@@ -74,14 +74,26 @@ img {
   pointer-events: none;
 }
 
-.loader-spinner {
-  width: 60px;
-  height: 60px;
-  border: 3px solid rgba(255, 255, 255, 0.1);
-  border-top: 3px solid var(--red);
-  border-right: 3px solid var(--red);
-  border-radius: 50%;
-  animation: spin 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+.guitar-loader {
+  width: 140px;
+  height: auto;
+  animation: guitarSwing 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(200, 16, 46, 0.5));
+  image-rendering: crisp-edges;
+}
+
+@keyframes guitarSwing {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes spin {
